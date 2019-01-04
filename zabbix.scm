@@ -113,7 +113,9 @@ newspace."
           channels))
 
   (define remote (or (assq-ref opts 'remote)
-                     (string-append (getenv "HOME") "/.config/guix/channels.scm")))
+                     (and=> (getenv "HOME")
+                            (lambda (home)
+                              (string-append home "/.config/guix/channels.scm")))))
 
   (define profile (or (assq-ref opts 'profile) (current-profile)))
 
