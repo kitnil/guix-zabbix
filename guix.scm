@@ -12,11 +12,12 @@
              (ice-9 rdelim)
              (gnu packages bash)
              (gnu packages guile)
-             (gnu packages package-management))
+             (gnu packages package-management)
+             (gnu packages version-control))
 
 (define %source-dir (dirname (current-filename)))
 
-(define (git . args)
+(define (git-output . args)
   "Execute 'git ARGS ...' command and return its output without trailing
 newspace."
   (with-directory-excursion %source-dir
@@ -25,7 +26,7 @@ newspace."
       (close-port port)
       (string-trim-right output #\newline))))
 
-(let ((commit (git "log" "-n" "1" "--pretty=format:%H")))
+(let ((commit (git-output "log" "-n" "1" "--pretty=format:%H")))
   (package
     (name "zabbix-guix")
     (version (string-append "0.0.1" "-" (string-take commit 7)))
@@ -34,7 +35,8 @@ newspace."
                         #:select? (git-predicate %source-dir)))
     (build-system guile-build-system)
     (inputs
-     `(("bash" ,bash)))
+     `(("bash" ,bash)
+       ("git" ,git)))
     (native-inputs
      `(("guile" ,guile-2.2)
        ("guile-json" ,guile-json)
@@ -95,7 +97,8 @@ newspace."
                          (chmod zabbix-guix #o555)
                          (wrap-program zabbix-guix
                            `("GUILE_LOAD_PATH" ":" prefix (,path))
-                           `("GUILE_LOAD_COMPILED_PATH" ":" prefix (,gopath)))
+                           `("GUILE_LOAD_COMPILED_PATH" ":" prefix (,gopath))
+                           `("PATH" ":" prefix (,(string-append (assoc-ref inputs "git") "/bin"))))
                          #t))))))
     (home-page "https://anongit.duckdns.org/guix/zabbix-guix")
     (description "This package provides a Guile script to monitor Guix
