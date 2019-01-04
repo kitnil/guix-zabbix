@@ -1,0 +1,4 @@
+#!/bin/sh
+# -*- scheme -*-
+exec ${GUILE:-$(which guile)} $GUILE_FLAGS --no-auto-compile -e '(@@ (zabbix) main)' -s "$0" "$@"
+!#
