@@ -48,6 +48,7 @@ newspace."
                                   ('commit commit)
                                   _ ...))
             (channel (name (string->symbol (manifest-entry-name entry)))
+                     (branch branch)
                      (url url)
                      (commit commit)
                      (location #f)))
